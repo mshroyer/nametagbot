@@ -2,14 +2,21 @@ import sqlite3
 
 from nametagbot import User
 
+__all__ = ['Database']
+
 
 class Database:
     def __init__(self, db_path):
-        self.conn = sqlite3.connect(db_path)
+        self.conn = sqlite3.connect(
+            db_path,
+            detect_types=sqlite3.PARSE_DECLTYPES,
+            isolation_level=None,  # Explicit transaction handling.
+            check_same_thread=False)
         self._init_db()
 
     def set_user_attendance(self, user, is_attending):
         with self.conn:
+            self.conn.execute('BEGIN')
             self._update_user(user)
             self.conn.execute(
                 r'''
@@ -19,6 +26,7 @@ class Database:
     def update_roster(self, users):
         """Updates the roster with the users' nicks and avatars."""
         with self.conn:
+            self.conn.execute('BEGIN')
             for user in users:
                 self._update_user(user)
 
@@ -46,15 +54,14 @@ class Database:
         ''', (user.user_id, user.nick, user.avatar))
 
     def _init_db(self):
-        with self.conn:
-            self.conn.execute(r'''
-                CREATE TABLE IF NOT EXISTS Users
-                    (user_id STRING NOT NULL,
-                     nick STRING,
-                     avatar STRING,
-                     attending BOOL,
-                     PRIMARY KEY (user_id));
-            ''')
-            self.conn.execute(r'''
-                CREATE INDEX IF NOT EXISTS idx_attending ON Users (attending);
-            ''')
+        self.conn.execute(r'''
+            CREATE TABLE IF NOT EXISTS Users
+                (user_id TEXT NOT NULL,
+                 nick TEXT,
+                 avatar TEXT,
+                 attending BOOL,
+                 PRIMARY KEY (user_id));
+        ''')
+        self.conn.execute(r'''
+            CREATE INDEX IF NOT EXISTS idx_attending ON Users (attending);
+        ''')
