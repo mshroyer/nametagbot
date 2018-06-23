@@ -38,7 +38,8 @@ class Database:
 
     def attending_users(self):
         cur = self.conn.cursor()
-        cur.execute('SELECT user_id, nick, avatar FROM Users WHERE attending;')
+        cur.execute(
+            'SELECT user_id, nick, avatar FROM Users WHERE attending = TRUE;')
 
         while True:
             rows = cur.fetchmany()
@@ -68,5 +69,6 @@ class Database:
                  PRIMARY KEY (user_id));
         ''')
         self.conn.execute('''
-            CREATE INDEX IF NOT EXISTS idx_attending ON Users (attending);
+            CREATE INDEX IF NOT EXISTS idx_attending_nick
+            ON Users (attending, nick);
         ''')

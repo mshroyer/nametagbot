@@ -16,7 +16,14 @@ class DbTestCase(unittest.TestCase):
         self.db.conn.close()
         shutil.rmtree(self.test_dir)
 
-    def testSetUserAttendance(self):
+    def test_set_user_attendance(self):
         user = User('1', 'Bob', 'Avatar1')
         self.db.set_user_attendance(user, True)
         self.assertEqual(list(self.db.attending_users()), [user])
+
+    def test_update_roster_preserves_attendance(self):
+        self.db.set_user_attendance(User('1', 'Bob', 'avatar1'), True)
+        self.db.update_roster([User('1', 'Bobby', 'avatar2')])
+
+        self.assertEqual(
+            list(self.db.attending_users()), [User('1', 'Bobby', 'avatar2')])
