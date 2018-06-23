@@ -6,7 +6,7 @@ from nametagbot import User
 class Database:
     def __init__(self, db_path):
         self.conn = sqlite3.connect(db_path)
-        self._initialize_db()
+        self._init_db()
 
     def set_user_attendance(self, user, is_attending):
         with self.conn:
@@ -45,7 +45,7 @@ class Database:
                 avatar = excluded.avatar;
         ''', (user.user_id, user.nick, user.avatar))
 
-    def _initialize_db(self):
+    def _init_db(self):
         with self.conn:
             self.conn.execute(r'''
                 CREATE TABLE IF NOT EXISTS Users
