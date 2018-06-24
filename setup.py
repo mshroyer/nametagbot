@@ -4,6 +4,11 @@ setup(
     name='nametagbot',
     version='0.0.1',
     packages=['nametagbot'],
+    entry_points={
+        'console_scripts': [
+            'nametagbot-updateroster=nametagbot.updateroster:main',
+        ],
+    },
     test_suite='tests',
     url='',
     license='',
