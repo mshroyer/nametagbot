@@ -24,6 +24,10 @@ class RosterTestCase(unittest.TestCase):
         # the tables have already been created.
         self.roster = Roster(self.test_file)
 
+    def test_makes_directories(self):
+        roster = Roster(os.path.join(self.test_dir, 'foo', 'bar'))
+        roster.close()
+
     def test_set_user_attendance(self):
         bob = User('1', 'Bob', 'avatar1')
         jay = User('2', 'Jay', 'avatar2')

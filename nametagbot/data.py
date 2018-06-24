@@ -1,3 +1,4 @@
+import os
 import sqlite3
 
 from . import User
@@ -13,6 +14,7 @@ class Roster:
     """
 
     def __init__(self, db_path, init_db=True):
+        os.makedirs(os.path.dirname(db_path), 0o770, exist_ok=True)
         self.db = sqlite3.connect(
             db_path,
             detect_types=sqlite3.PARSE_DECLTYPES,
