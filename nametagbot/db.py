@@ -1,6 +1,6 @@
 import sqlite3
 
-from nametagbot import User
+from .model import User
 
 __all__ = ['Database']
 

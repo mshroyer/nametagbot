@@ -3,8 +3,7 @@ import shutil
 import tempfile
 import unittest
 
-from nametagbot import User
-from nametagbot.db import Database
+from nametagbot import Database, User
 
 
 class DatabaseTestCase(unittest.TestCase):

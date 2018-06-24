@@ -1,8 +1,7 @@
 import discord
 import logging
 
-from nametagbot import Config, User
-from nametagbot.db import Database
+from nametagbot import Config, Database, User
 
 SERVER_ID = '459560440113135618'
 
