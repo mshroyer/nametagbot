@@ -31,28 +31,26 @@ def main():
         action='append',
         type=str,
         help='specific server id(s) from which to update')
-    p.parse_args()
+    args = p.parse_args()
 
     config = Config()
     roster = Roster('/Users/mshroyer/Desktop/nametagbot.db')
-    servers = p.server
+    server_ids = args.server
     client = discord.Client()
 
     @client.event
     async def on_ready():
         logging.info('Ready!')
-        logging.info('Connected to servers: %r',
-                     [str(server) for server in client.servers])
-        logging.info('Can see members: %r',
-                     [str(member) for member in client.get_all_members()])
 
-        nonlocal servers
-        if not servers:
-            servers = client.servers
+        nonlocal server_ids
+        if not server_ids:
+            server_ids = [server.id for server in client.servers]
+
+        logging.info('Updating roster from server IDs: %r', server_ids)
 
         users = []
-        for server in servers:
-            for member in client.get_server(server).members:
+        for server_id in server_ids:
+            for member in client.get_server(server_id).members:
                 nick = member.nick
                 if nick is None:
                     nick = member.name
