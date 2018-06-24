@@ -37,22 +37,27 @@ def _update_roster(config, roster):
     errors = []
 
     def retrieve_users():
-        logging.info('Retrieving users from server %s', config.server_id())
         nonlocal users
+
+        logging.info('Retrieving users from server %s', config.server_id())
         for member in client.get_server(config.server_id()).members:
             nick = member.nick if member.nick is not None else member.name
             users.append(User(member.id, nick, member.avatar))
 
     @client.event
     async def on_ready():
+        nonlocal errors
+
         logging.info('Ready!')
         try:
             retrieve_users()
         except Exception as e:
             logging.error('Error retrieving users: %s', e)
-            nonlocal errors
+
+            # discord.py's event system would otherwise eat an exception,
+            # so we need to manually propagate it outside the event loop in
+            # order to stop the script.
             errors.append(e)
-            raise e
         finally:
             logging.info('Logging out')
             await client.logout()
@@ -60,7 +65,9 @@ def _update_roster(config, roster):
     client.run(config.bot_token())
 
     for e in errors:
-        raise Exception('Error during event loop') from e
+        raise Exception('Error in event loop') from e
 
     logging.info('Updating roster with %d users', len(users))
     roster.update_users(users)
+
+    logging.info('Done!')
