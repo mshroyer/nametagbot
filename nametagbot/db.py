@@ -24,10 +24,13 @@ class Database:
         with self.conn:
             self.conn.execute('BEGIN')
             self._upsert_user(user)
-            self.conn.execute(
-                '''
-                UPDATE Users SET attending = ? WHERE user_id = ?
-            ''', (is_attending, user.user_id))
+
+            if is_attending:
+                query = 'INSERT OR IGNORE INTO Attendance VALUES (?);'
+            else:
+                query = 'DELETE FROM Attendance WHERE user_id = ?;'
+
+            self.conn.execute(query, (user.user_id))
 
     def update_roster(self, users):
         """Updates the roster with the users' nicks and avatars."""
@@ -38,8 +41,11 @@ class Database:
 
     def attending_users(self):
         cur = self.conn.cursor()
-        cur.execute(
-            'SELECT user_id, nick, avatar FROM Users WHERE attending = TRUE;')
+        cur.execute('''
+            SELECT user_id, nick, avatar
+            FROM Attendance NATURAL LEFT JOIN User
+            ORDER BY nick;
+        ''')
 
         while True:
             rows = cur.fetchmany()
@@ -56,22 +62,24 @@ class Database:
     def _upsert_user(self, user):
         self.conn.execute(
             '''
-            INSERT INTO Users (user_id, nick, avatar) VALUES (?, ?, ?)
-            ON CONFLICT (user_id) DO UPDATE SET
-                nick = excluded.nick,
-                avatar = excluded.avatar;
+            INSERT OR REPLACE INTO User (user_id, nick, avatar)
+            VALUES (?, ?, ?);
         ''', tuple(user))
 
     def _init_db(self):
+        # It's easy to implement _upsert_user with a single table using
+        # Sqlite 3.24's "ON CONFLICT ... DO UPDATE" syntax, but this way
+        # the program won't require a Python built against the very latest
+        # sqlite3.
         self.conn.execute('''
-            CREATE TABLE IF NOT EXISTS Users
+            CREATE TABLE IF NOT EXISTS User
                 (user_id TEXT NOT NULL,
                  nick TEXT,
                  avatar TEXT,
-                 attending BOOL,
                  PRIMARY KEY (user_id));
         ''')
         self.conn.execute('''
-            CREATE INDEX IF NOT EXISTS idx_attending_nick
-            ON Users (attending, nick);
+            CREATE TABLE IF NOT EXISTS Attendance
+                (user_id TEXT NOT NULL UNIQUE,
+                 FOREIGN KEY (user_id) REFERENCES User (user_id));
         ''')
