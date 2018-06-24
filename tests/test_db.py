@@ -34,6 +34,19 @@ class DatabaseTestCase(unittest.TestCase):
         self.db.set_user_attendance(cara, False)
         self.assertListEqual(list(self.db.attending_users()), [bob, jay])
 
+        self.db.set_user_attendance(jay, False)
+        self.db.set_user_attendance(cara, True)
+        self.assertListEqual(list(self.db.attending_users()), [bob, cara])
+
+    def test_set_user_attendance_updates_user(self):
+        steve = User('1', 'Steve', 'avatar1')
+        self.db.set_user_attendance(steve, False)
+
+        steve2 = steve._replace(avatar='avatar2')
+        self.db.set_user_attendance(steve2, True)
+
+        self.assertListEqual(list(self.db.attending_users()), [steve2])
+
     def test_attending_users_sorted_by_nick(self):
         steve = User('1', 'Steve', 'avatar1')
         jay = User('2', 'Jay', 'avatar2')
