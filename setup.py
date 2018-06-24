@@ -6,7 +6,7 @@ setup(
     packages=['nametagbot'],
     entry_points={
         'console_scripts': [
-            'nametagbot-updateroster=nametagbot.updateroster:main',
+            'nametagbot-updateroster=nametagbot.cmd_updateroster:main',
         ],
     },
     test_suite='tests',
