@@ -99,11 +99,12 @@ class _Transaction:
 
     """
 
-    def __init__(self, conn):
+    def __init__(self, conn, kind='DEFERRED'):
         self.conn = conn
+        self.kind = kind
 
     def __enter__(self):
-        self.conn.execute('BEGIN')
+        self.conn.execute('BEGIN {}'.format(self.kind))
 
     def __exit__(self, *args):
         self.conn.__exit__(*args)
