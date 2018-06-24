@@ -12,20 +12,24 @@ class Database:
 
     """
 
-    def __init__(self, db_path):
+    def __init__(self, db_path, init_db=True):
         self.conn = sqlite3.connect(
             db_path,
             detect_types=sqlite3.PARSE_DECLTYPES,
             isolation_level=None,  # Explicit transaction handling.
             check_same_thread=True)
-        self._init_db()
+        if init_db:
+            self._init_db()
 
     def set_user_attendance(self, user, is_attending):
         with _Transaction(self.conn):
             self._upsert_user(user)
 
             if is_attending:
-                query = 'INSERT OR IGNORE INTO Attendance VALUES (?);'
+                query = '''
+                    INSERT OR IGNORE INTO Attendance (user_id)
+                    VALUES (?);
+                '''
             else:
                 query = 'DELETE FROM Attendance WHERE user_id = ?;'
 

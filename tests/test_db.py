@@ -7,7 +7,7 @@ from nametagbot import User
 from nametagbot.db import Database
 
 
-class DbTestCase(unittest.TestCase):
+class DatabaseTestCase(unittest.TestCase):
     def setUp(self):
         self.test_dir = tempfile.mkdtemp()
         self.test_file = os.path.join(self.test_dir, 'test.db')
