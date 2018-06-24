@@ -17,11 +17,17 @@ class Config:
         self.c = configparser.ConfigParser()
         self.c.read(path)
 
+    def server_id(self):
+        try:
+            return self.c['roster']['ServerId']
+        except KeyError:
+            raise ConfigError('roster.ServerId not configured')
+
     def bot_token(self):
         try:
             return self.c['auth']['BotToken']
         except KeyError:
-            raise ConfigError('BotToken not configured')
+            raise ConfigError('auth.BotToken not configured')
 
     @staticmethod
     def _default_path():

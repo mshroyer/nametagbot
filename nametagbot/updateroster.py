@@ -17,8 +17,6 @@ import logging
 from . import Config, User
 from .data import Roster
 
-SERVER_ID = '459560440113135618'
-
 
 def main():
     logging.basicConfig(level=logging.INFO)
@@ -27,38 +25,32 @@ def main():
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument(
-        '-s',
-        '--server',
-        action='append',
+        '-c',
+        '--config',
         type=str,
-        help='specific server id(s) from which to update')
+        help='configuration file path')
     args = p.parse_args()
 
-    config = Config()
+    config = Config(args.config)
     roster = Roster('/Users/mshroyer/Desktop/nametagbot.db')
-    server_ids = args.server
     client = discord.Client()
 
     @client.event
     async def on_ready():
         logging.info('Ready!')
 
-        nonlocal server_ids
-        if not server_ids:
-            server_ids = [server.id for server in client.servers]
-
-        logging.info('Updating roster from server IDs: %r', server_ids)
-
         users = []
-        for server_id in server_ids:
-            for member in client.get_server(server_id).members:
-                nick = member.nick
-                if nick is None:
-                    nick = member.name
+        for member in client.get_server(config.server_id()).members:
+            nick = member.nick
+            if nick is None:
+                nick = member.name
 
             users.append(User(member.id, nick, member.avatar))
 
+        logging.info('Updating roster with %d users', len(users))
         roster.update_users(users)
+
+        logging.info('Logging out')
         await client.logout()
 
     client.run(config.bot_token())
