@@ -17,7 +17,7 @@ class Config:
 
     def bot_token(self):
         try:
-            return self.c['authentication']['BotToken']
+            return self.c['auth']['BotToken']
         except KeyError:
             raise ConfigError('BotToken not configured')
 
