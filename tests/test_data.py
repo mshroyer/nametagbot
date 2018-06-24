@@ -3,7 +3,8 @@ import shutil
 import tempfile
 import unittest
 
-from nametagbot import Roster, User
+from nametagbot import User
+from nametagbot.data import Roster
 
 
 class RosterTestCase(unittest.TestCase):

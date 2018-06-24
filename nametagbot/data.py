@@ -1,6 +1,6 @@
 import sqlite3
 
-from .model import User
+from . import User
 
 __all__ = ['Roster']
 

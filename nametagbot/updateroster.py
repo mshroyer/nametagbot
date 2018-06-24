@@ -14,7 +14,8 @@ import argparse
 import discord
 import logging
 
-from nametagbot import Config, Roster, User
+from . import Config, User
+from .data import Roster
 
 SERVER_ID = '459560440113135618'
 
