@@ -24,17 +24,15 @@ def main():
     p = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument(
-        '-c',
-        '--config',
-        type=str,
-        help='configuration file path')
+    p.add_argument('-c', '--config', type=str, help='configuration file path')
     args = p.parse_args()
 
-    config = Config(args.config)
-    roster = Roster('/Users/mshroyer/Desktop/nametagbot.db')
-    client = discord.Client()
+    _update_roster(
+        Config(args.config), Roster('/Users/mshroyer/Desktop/nametagbot.db'),
+        discord.Client())
 
+
+def _update_roster(config, roster, client):
     @client.event
     async def on_ready():
         logging.info('Ready!')
