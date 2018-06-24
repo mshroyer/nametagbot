@@ -1,7 +1,8 @@
 import os
+import shutil
 import sqlite3
 
-from . import User
+from nametagbot import User
 
 __all__ = ['Roster']
 
@@ -89,6 +90,53 @@ class Roster:
         ''')
 
 
+class AvatarCache:
+    """Loading cache of user avatars."""
+
+    def __init__(self, _requests, cache_path):
+        self._requests = _requests
+        self.cache_path = cache_path
+
+        _makedirs(cache_path)
+
+    def get_avatar(self, user, path):
+        self._cache_avatar(user)
+        shutil.copyfile(self._avatar_cache_path(user), path)
+
+    def _cache_avatar(self, user):
+        cache_path = self._avatar_cache_path(user)
+        if os.path.exists(cache_path):
+            return
+
+        resp = self._requests.get(self._avatar_url(user))
+        if not resp.ok:
+            if resp.status_code == 404:
+                raise ValueError('Invalid avatar: {}'.format(resp.reason))
+            else:
+                raise Exception('Error getting avatar: {}'.format(resp.reason))
+
+        content_type = resp.headers['Content-Type']
+        if content_type != 'image/png':
+            raise ValueError(
+                'Unexpected avatar content type {}'.format(content_type))
+
+        with open(cache_path, 'wb') as f:
+            f.truncate()
+            f.write(resp.content)
+
+    def _avatar_cache_path(self, user):
+        return os.path.join(self.cache_path,
+                            '{user_id}_{avatar}.png'.format(**user._asdict()))
+
+    @staticmethod
+    def _avatar_url(user):
+        return _AVATAR_CDN_PREFIX + '/{user_id}/{avatar}.png'.format(
+            **user._asdict())
+
+
+_AVATAR_CDN_PREFIX = 'https://cdn.discordapp.com/avatars/'
+
+
 class _Transaction:
     """Transaction context manager.
 
@@ -112,6 +160,10 @@ class _Transaction:
         self.db.__exit__(*args)
 
 
+def _makedirs(dir_path):
+    os.makedirs(dir_path, 0o750, exist_ok=True)
+
+
 def _makedirs_for_data_file(path):
     """Ensures that parent dirs exist for the given data file path."""
-    os.makedirs(os.path.dirname(os.path.abspath(path)), 0o750, exist_ok=True)
+    _makedirs(os.path.dirname(os.path.abspath(path)))
