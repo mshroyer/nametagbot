@@ -28,27 +28,27 @@ def main():
     args = p.parse_args()
 
     _update_roster(
-        Config(args.config), Roster('/Users/mshroyer/Desktop/nametagbot.db'),
-        discord.Client())
+        Config(args.config), Roster('/Users/mshroyer/Desktop/nametagbot.db'))
 
 
-def _update_roster(config, roster, client):
+def _update_roster(config, roster):
+    client = discord.Client()
+    users = []
+
     @client.event
     async def on_ready():
         logging.info('Ready!')
 
-        users = []
+        logging.info('Retrieving users from server %s', config.server_id())
+        nonlocal users
         for member in client.get_server(config.server_id()).members:
-            nick = member.nick
-            if nick is None:
-                nick = member.name
-
+            nick = member.nick if member.nick is not None else member.name
             users.append(User(member.id, nick, member.avatar))
-
-        logging.info('Updating roster with %d users', len(users))
-        roster.update_users(users)
 
         logging.info('Logging out')
         await client.logout()
 
     client.run(config.bot_token())
+
+    logging.info('Updating roster with %d users', len(users))
+    roster.update_users(users)
