@@ -4,6 +4,8 @@ import logging
 from nametagbot import Config, User
 from nametagbot.db import Database
 
+SERVER_ID = '459560440113135618'
+
 
 def main():
     logging.basicConfig(level=logging.INFO)
@@ -16,15 +18,19 @@ def main():
     async def on_ready():
         print('Ready!')
         print('Connected to servers: {}'.format(
-            [str(server) for server in client.servers]))
+            [server.id for server in client.servers]))
         print('Can see members: {}'.format(
             [str(member) for member in client.get_all_members()]))
 
-        db.update_roster([
-            User(member.id, member.nick, member.avatar)
-            for member in client.get_server(81384788765712384).members
-        ])
+        users = []
+        for member in client.get_server(SERVER_ID).members:
+            nick = member.nick
+            if nick is None:
+                nick = member.name
 
+            users.append(User(member.id, nick, member.avatar))
+
+        db.update_roster(users)
         await client.logout()
 
     client.run(config.bot_token())
