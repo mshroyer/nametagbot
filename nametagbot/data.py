@@ -14,7 +14,7 @@ class Roster:
     """
 
     def __init__(self, db_path, init_db=True):
-        os.makedirs(os.path.dirname(db_path), 0o770, exist_ok=True)
+        _makedirs_for_data_file(db_path)
         self.db = sqlite3.connect(
             db_path,
             detect_types=sqlite3.PARSE_DECLTYPES,
@@ -110,3 +110,8 @@ class _Transaction:
 
     def __exit__(self, *args):
         self.db.__exit__(*args)
+
+
+def _makedirs_for_data_file(path):
+    """Ensures that parent dirs exist for the given data file path."""
+    os.makedirs(os.path.dirname(os.path.abspath(path)), 0o750, exist_ok=True)
