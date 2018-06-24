@@ -23,7 +23,7 @@ class Database:
     def set_user_attendance(self, user, is_attending):
         with self.conn:
             self.conn.execute('BEGIN')
-            self._update_user(user)
+            self._upsert_user(user)
             self.conn.execute(
                 '''
                 UPDATE Users SET attending = ? WHERE user_id = ?
@@ -34,7 +34,7 @@ class Database:
         with self.conn:
             self.conn.execute('BEGIN')
             for user in users:
-                self._update_user(user)
+                self._upsert_user(user)
 
     def attending_users(self):
         cur = self.conn.cursor()
@@ -50,14 +50,14 @@ class Database:
 
         cur.close()
 
-    def _update_user(self, user):
+    def _upsert_user(self, user):
         self.conn.execute(
             '''
             INSERT INTO Users (user_id, nick, avatar) VALUES (?, ?, ?)
             ON CONFLICT (user_id) DO UPDATE SET
                 nick = excluded.nick,
                 avatar = excluded.avatar;
-        ''', (user.user_id, user.nick, user.avatar))
+        ''', tuple(user))
 
     def _init_db(self):
         self.conn.execute('''
