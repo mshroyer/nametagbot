@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 import sqlite3
@@ -106,6 +107,7 @@ class AvatarCache:
     def _cache_avatar(self, user):
         cache_path = self._avatar_cache_path(user)
         if os.path.exists(cache_path):
+            logging.debug('Avatar cache hit at %s', cache_path)
             return
 
         resp = self._requests.get(self._avatar_url(user))
@@ -123,6 +125,8 @@ class AvatarCache:
         with open(cache_path, 'wb') as f:
             f.truncate()
             f.write(resp.content)
+
+        logging.debug('Cached new avatar at %s', cache_path)
 
     def _avatar_cache_path(self, user):
         return os.path.join(self.cache_path,
