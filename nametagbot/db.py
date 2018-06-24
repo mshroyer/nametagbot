@@ -69,8 +69,6 @@ class Database:
         ''', tuple(user))
 
     def _init_db(self):
-        # TODO(mshroyer): Make user_id an INTEGER?
-
         # It's easy to implement _upsert_user with a single table using
         # Sqlite 3.24's "ON CONFLICT ... DO UPDATE" syntax, but this way
         # the program won't require a Python built against the very latest
