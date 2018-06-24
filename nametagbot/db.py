@@ -21,8 +21,7 @@ class Database:
         self._init_db()
 
     def set_user_attendance(self, user, is_attending):
-        with self.conn:
-            self.conn.execute('BEGIN')
+        with _Transaction(self.conn):
             self._upsert_user(user)
 
             if is_attending:
@@ -34,8 +33,7 @@ class Database:
 
     def update_roster(self, users):
         """Updates the roster with the users' nicks and avatars."""
-        with self.conn:
-            self.conn.execute('BEGIN')
+        with _Transaction(self.conn):
             for user in users:
                 self._upsert_user(user)
 
@@ -83,3 +81,25 @@ class Database:
                 (user_id TEXT NOT NULL UNIQUE,
                  FOREIGN KEY (user_id) REFERENCES User (user_id));
         ''')
+
+
+class _Transaction:
+    """Transaction context manager.
+
+    The Python sqlite3 module handles transactions in a counter-intuitive
+    way.  Among other issues, the database connection can be used as a
+    context manager that automatically commits or rolls back transactions,
+    however it does not automatically begin a connection.  This class wraps
+    the connection's context manager to automatically execute BEGIN when
+    entering.
+
+    """
+
+    def __init__(self, conn):
+        self.conn = conn
+
+    def __enter__(self):
+        self.conn.execute('BEGIN')
+
+    def __exit__(self, *args):
+        self.conn.__exit__(*args)
