@@ -50,6 +50,9 @@ class Database:
 
         cur.close()
 
+    def close(self):
+        self.conn.close()
+
     def _upsert_user(self, user):
         self.conn.execute(
             '''
