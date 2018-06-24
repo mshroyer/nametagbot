@@ -34,6 +34,18 @@ class DbTestCase(unittest.TestCase):
         self.db.set_user_attendance(cara, False)
         self.assertListEqual(list(self.db.attending_users()), [bob, jay])
 
+    def test_attending_users_sorted_by_nick(self):
+        steve = User('1', 'Steve', 'avatar1')
+        jay = User('2', 'Jay', 'avatar2')
+        bob = User('3', 'Bob', 'avatar3')
+        evan = User('4', 'Evan', 'avatar4')
+        cara = User('5', 'Cara', 'avatar5')
+        for user in [steve, jay, bob, evan, cara]:
+            self.db.set_user_attendance(user, True)
+
+        self.assertListEqual(
+            list(self.db.attending_users()), [bob, cara, evan, jay, steve])
+
     def test_update_roster_preserves_attendance(self):
         bob = User('1', 'Bob', 'avatar1')
         self.db.set_user_attendance(bob, True)
@@ -43,7 +55,7 @@ class DbTestCase(unittest.TestCase):
         self.assertListEqual(list(self.db.attending_users()), [bob2])
 
         self.db.set_user_attendance(bob, False)
-        bob3 = bob2._replace(nick='Bob Novella')
+        bob3 = bob2._replace(nick='Robert')
         self.db.update_roster([bob3])
         self.assertListEqual(list(self.db.attending_users()), [])
 
