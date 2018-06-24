@@ -34,21 +34,33 @@ def main():
 def _update_roster(config, roster):
     client = discord.Client()
     users = []
+    errors = []
 
-    @client.event
-    async def on_ready():
-        logging.info('Ready!')
-
+    def retrieve_users():
         logging.info('Retrieving users from server %s', config.server_id())
         nonlocal users
         for member in client.get_server(config.server_id()).members:
             nick = member.nick if member.nick is not None else member.name
             users.append(User(member.id, nick, member.avatar))
 
-        logging.info('Logging out')
-        await client.logout()
+    @client.event
+    async def on_ready():
+        logging.info('Ready!')
+        try:
+            retrieve_users()
+        except Exception as e:
+            logging.error('Error retrieving users: %s', e)
+            nonlocal errors
+            errors.append(e)
+            raise e
+        finally:
+            logging.info('Logging out')
+            await client.logout()
 
     client.run(config.bot_token())
+
+    for e in errors:
+        raise Exception('Error during event loop') from e
 
     logging.info('Updating roster with %d users', len(users))
     roster.update_users(users)
