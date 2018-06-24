@@ -15,11 +15,11 @@ def main():
 
     @client.event
     async def on_ready():
-        print('Ready!')
-        print('Connected to servers: {}'.format(
-            [server.id for server in client.servers]))
-        print('Can see members: {}'.format(
-            [str(member) for member in client.get_all_members()]))
+        logging.info('Ready!')
+        logging.info('Connected to servers: %r',
+                     [str(server) for server in client.servers])
+        logging.info('Can see members: %r',
+                     [str(member) for member in client.get_all_members()])
 
         users = []
         for member in client.get_server(SERVER_ID).members:
