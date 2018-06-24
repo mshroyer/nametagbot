@@ -2,18 +2,18 @@ import sqlite3
 
 from .model import User
 
-__all__ = ['Database']
+__all__ = ['Roster']
 
 
-class Database:
-    """Database interface.
+class Roster:
+    """Roster database interface.
 
     Not threadsafe.
 
     """
 
     def __init__(self, db_path, init_db=True):
-        self.conn = sqlite3.connect(
+        self.db = sqlite3.connect(
             db_path,
             detect_types=sqlite3.PARSE_DECLTYPES,
             isolation_level=None,  # Explicit transaction handling.
@@ -22,7 +22,7 @@ class Database:
             self._init_db()
 
     def set_user_attendance(self, user, is_attending):
-        with _Transaction(self.conn):
+        with _Transaction(self.db):
             self._upsert_user(user)
 
             if is_attending:
@@ -33,16 +33,16 @@ class Database:
             else:
                 query = 'DELETE FROM Attendance WHERE user_id = ?;'
 
-            self.conn.execute(query, (user.user_id))
+            self.db.execute(query, (user.user_id))
 
-    def update_roster(self, users):
+    def update_users(self, users):
         """Updates the roster with the users' nicks and avatars."""
-        with _Transaction(self.conn):
+        with _Transaction(self.db):
             for user in users:
                 self._upsert_user(user)
 
     def attending_users(self):
-        cur = self.conn.cursor()
+        cur = self.db.cursor()
         cur.execute('''
             SELECT user_id, nick, avatar
             FROM Attendance NATURAL LEFT JOIN User
@@ -59,10 +59,10 @@ class Database:
         cur.close()
 
     def close(self):
-        self.conn.close()
+        self.db.close()
 
     def _upsert_user(self, user):
-        self.conn.execute(
+        self.db.execute(
             '''
             INSERT OR REPLACE INTO User (user_id, nick, avatar)
             VALUES (?, ?, ?);
@@ -73,14 +73,14 @@ class Database:
         # Sqlite 3.24's "ON CONFLICT ... DO UPDATE" syntax, but this way
         # the program won't require a Python built against the very latest
         # sqlite3.
-        self.conn.execute('''
+        self.db.execute('''
             CREATE TABLE IF NOT EXISTS User
                 (user_id TEXT NOT NULL,
                  nick TEXT,
                  avatar TEXT,
                  PRIMARY KEY (user_id));
         ''')
-        self.conn.execute('''
+        self.db.execute('''
             CREATE TABLE IF NOT EXISTS Attendance
                 (user_id TEXT NOT NULL UNIQUE,
                  FOREIGN KEY (user_id) REFERENCES User (user_id));
@@ -99,12 +99,12 @@ class _Transaction:
 
     """
 
-    def __init__(self, conn, kind='DEFERRED'):
-        self.conn = conn
+    def __init__(self, db, kind='DEFERRED'):
+        self.db = db
         self.kind = kind
 
     def __enter__(self):
-        self.conn.execute('BEGIN {}'.format(self.kind))
+        self.db.execute('BEGIN {}'.format(self.kind))
 
     def __exit__(self, *args):
-        self.conn.__exit__(*args)
+        self.db.__exit__(*args)

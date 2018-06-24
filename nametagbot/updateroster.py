@@ -14,7 +14,7 @@ import argparse
 import discord
 import logging
 
-from nametagbot import Config, Database, User
+from nametagbot import Config, Roster, User
 
 SERVER_ID = '459560440113135618'
 
@@ -34,7 +34,7 @@ def main():
     p.parse_args()
 
     config = Config()
-    db = Database('/Users/mshroyer/Desktop/nametagbot.db')
+    roster = Roster('/Users/mshroyer/Desktop/nametagbot.db')
     servers = p.server
     client = discord.Client()
 
@@ -59,7 +59,7 @@ def main():
 
             users.append(User(member.id, nick, member.avatar))
 
-        db.update_roster(users)
+        roster.update_users(users)
         await client.logout()
 
     client.run(config.bot_token())
