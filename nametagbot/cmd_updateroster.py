@@ -14,8 +14,8 @@ import argparse
 import discord
 import logging
 
-from . import Config, User
-from .data import Roster
+from . import User
+from .config import Config
 
 
 def main():
@@ -27,8 +27,8 @@ def main():
     p.add_argument('-c', '--config', type=str, help='configuration file path')
     args = p.parse_args()
 
-    _update_roster(
-        Config(args.config), Roster('/Users/mshroyer/Desktop/nametagbot.db'))
+    config = Config(args.config)
+    _update_roster(config, config.get_roster())
 
 
 def _update_roster(config, roster):
@@ -39,8 +39,8 @@ def _update_roster(config, roster):
     def retrieve_users():
         nonlocal users
 
-        logging.info('Retrieving users from server %s', config.server_id())
-        for member in client.get_server(config.server_id()).members:
+        logging.info('Retrieving users from server %s', config.server_id)
+        for member in client.get_server(config.server_id).members:
             nick = member.nick if member.nick is not None else member.name
             users.append(User(member.id, nick, member.avatar))
 
@@ -62,7 +62,7 @@ def _update_roster(config, roster):
             logging.info('Logging out')
             await client.logout()
 
-    client.run(config.bot_token())
+    client.run(config.bot_token)
 
     for e in errors:
         raise Exception('Error in event loop') from e
