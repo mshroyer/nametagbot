@@ -43,7 +43,7 @@ def test_set_user_attendance(roster):
 
 def test_set_user_attendance_updates_user(roster):
     steve = User('1', 'Steve', 'avatar1')
-    roster.set_user_attendance(steve, False)
+    roster.set_user_attendance(steve, True)
 
     steve2 = steve._replace(avatar='avatar2')
     roster.set_user_attendance(steve2, True)
