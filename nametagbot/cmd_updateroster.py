@@ -28,10 +28,10 @@ def main():
     args = p.parse_args()
 
     config = Config(args.config)
-    _update_roster(config, config.get_roster())
+    _update_roster(config)
 
 
-def _update_roster(config, roster):
+def _update_roster(config):
     client = discord.Client()
     users = []
     errors = []
@@ -68,6 +68,6 @@ def _update_roster(config, roster):
         raise Exception('Error in event loop') from e
 
     logging.info('Updating roster with %d users', len(users))
-    roster.update_users(users)
+    config.get_roster().update_users(users)
 
     logging.info('Done!')
