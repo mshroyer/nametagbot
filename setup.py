@@ -9,6 +9,8 @@ setup(
             'nametagbot-updateroster=nametagbot.cmd_updateroster:main',
         ],
     },
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest', 'responses'],
     test_suite='tests',
     url='',
     license='',
