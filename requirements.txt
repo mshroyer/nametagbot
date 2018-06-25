@@ -1,0 +1,13 @@
+aiohttp==1.0.5
+appdirs==1.4.3
+async-timeout==3.0.0
+certifi==2018.4.16
+chardet==3.0.4
+discord==0.0.2
+discord.py==0.16.12
+idna==2.7
+multidict==4.3.1
+-e git+git@github.com:mshroyer/nametagbot.git@2b91795b62e239842aca1d3e1e3974ec24dda638#egg=nametagbot
+requests==2.19.1
+urllib3==1.23
+websockets==3.4
