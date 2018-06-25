@@ -1,11 +1,14 @@
 import logging
 import os
+import requests
 import shutil
 import sqlite3
 
 from nametagbot import User
 
 __all__ = ['Roster']
+
+AVATAR_CDN_PREFIX = 'https://cdn.discordapp.com/avatars/'
 
 
 class Roster:
@@ -19,7 +22,6 @@ class Roster:
         _makedirs_for_data_file(db_path)
         self.db = sqlite3.connect(
             db_path,
-            detect_types=sqlite3.PARSE_DECLTYPES,
             isolation_level=None,  # Explicit transaction handling.
             check_same_thread=True)
         if init_db:
@@ -94,10 +96,8 @@ class Roster:
 class AvatarCache:
     """Loading cache of user avatars."""
 
-    def __init__(self, _requests, cache_path):
-        self._requests = _requests
+    def __init__(self, cache_path):
         self.cache_path = cache_path
-
         _makedirs(cache_path)
 
     def get_avatar(self, user, path):
@@ -110,7 +110,7 @@ class AvatarCache:
             logging.debug('Avatar cache hit at %s', cache_path)
             return
 
-        resp = self._requests.get(self._avatar_url(user))
+        resp = requests.get(self._avatar_url(user))
         if not resp.ok:
             if resp.status_code == 404:
                 raise ValueError('Invalid avatar: {}'.format(resp.reason))
@@ -134,11 +134,8 @@ class AvatarCache:
 
     @staticmethod
     def _avatar_url(user):
-        return _AVATAR_CDN_PREFIX + '/{user_id}/{avatar}.png'.format(
+        return AVATAR_CDN_PREFIX + '{user_id}/{avatar}.png'.format(
             **user._asdict())
-
-
-_AVATAR_CDN_PREFIX = 'https://cdn.discordapp.com/avatars/'
 
 
 class _Transaction:

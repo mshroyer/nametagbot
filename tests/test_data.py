@@ -1,10 +1,11 @@
 import os
+import responses
 import shutil
 import tempfile
 import unittest
 
 from nametagbot import User
-from nametagbot.data import Roster
+from nametagbot.data import AvatarCache, Roster, AVATAR_CDN_PREFIX
 
 
 class RosterTestCase(unittest.TestCase):
@@ -89,3 +90,29 @@ class RosterTestCase(unittest.TestCase):
     def test_update_users_accepts_unknown_users(self):
         user1 = User('1', 'Bob', 'avatar1')
         self.roster.update_users([user1])
+
+
+class AvatarCacheTestCase(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
+    @responses.activate
+    def test_get_avatar(self):
+        responses.add(
+            responses.GET,
+            AVATAR_CDN_PREFIX + '123/avatar1.png',
+            status=200,
+            content_type='image/png',
+            body=b'imagedata')
+
+        cache = AvatarCache(os.path.join(self.test_dir, 'cache'))
+        output_path = os.path.join(self.test_dir, 'out.png')
+        cache.get_avatar(User('123', 'foo', 'avatar1'), output_path)
+
+        with open(output_path, 'rb') as f:
+            data = f.read()
+
+        self.assertEqual(data, b'imagedata')
