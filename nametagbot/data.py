@@ -155,7 +155,10 @@ class AvatarCache:
 
     @staticmethod
     def _default_avatar(user):
-        return str(int(user.discriminator) % 5)
+        try:
+            return str(int(user.discriminator) % 5)
+        except ValueError:
+            return '0'
 
     @classmethod
     def _avatar_url(klass, user):
