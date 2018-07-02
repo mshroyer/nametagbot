@@ -60,6 +60,25 @@ def test_does_not_request_cached_avatars(cache, tmpdir):
 
 
 @responses.activate
+def test_fetches_default_for_user_without_avatar(cache, tmpdir):
+    responses.add(
+        responses.GET,
+        AVATAR_CDN_PREFIX + 'embed/avatars/1.png',
+        status=200,
+        content_type='image/png',
+        body=b'default_avatar_1')
+
+    user = User('123', 'foo', '1', '')
+    output_path = os.path.join(tmpdir, 'out.png')
+    cache.get_avatar(user, output_path)
+
+    with open(output_path, 'rb') as f:
+        data = f.read()
+
+    assert data == b'default_avatar_1'
+
+
+@responses.activate
 def test_not_found_avatar_raises_exception(cache, tmpdir):
     responses.add(
         responses.GET, AVATAR_CDN_PREFIX + '123/avatar1.png', status=404)

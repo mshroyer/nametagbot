@@ -144,13 +144,27 @@ class AvatarCache:
         logging.debug('Cached new avatar at %s', cache_path)
 
     def _avatar_cache_path(self, user):
-        return os.path.join(self.cache_path,
-                            '{user_id}_{avatar}.png'.format(**user._asdict()))
+        if user.avatar:
+            return os.path.join(
+                self.cache_path,
+                '{user_id}_{avatar}.png'.format(**user._asdict()))
+        else:
+            return os.path.join(
+                self.cache_path, 'default_{}.png'.format(
+                    self._default_avatar(user)))
 
     @staticmethod
-    def _avatar_url(user):
-        return AVATAR_CDN_PREFIX + '{user_id}/{avatar}.png'.format(
-            **user._asdict())
+    def _default_avatar(user):
+        return str(int(user.discriminator) % 5)
+
+    @classmethod
+    def _avatar_url(klass, user):
+        if user.avatar:
+            return AVATAR_CDN_PREFIX + '{user_id}/{avatar}.png'.format(
+                **user._asdict())
+        else:
+            return AVATAR_CDN_PREFIX + 'embed/avatars/{}.png'.format(
+                klass._default_avatar(user))
 
 
 class _Transaction:
