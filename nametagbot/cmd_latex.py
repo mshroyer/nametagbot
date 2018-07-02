@@ -51,7 +51,7 @@ def main():
 
 
 # http://eosrei.net/articles/2015/11/latex-templates-python-and-jinja2-generate-pdfs
-latex_jinja_env = jinja2.Environment(
+_latex_jinja_env = jinja2.Environment(
     block_start_string='\BLOCK{',
     block_end_string='}',
     variable_start_string='\VAR{',
@@ -64,7 +64,7 @@ latex_jinja_env = jinja2.Environment(
     autoescape=False,
     loader=jinja2.PackageLoader('nametagbot', 'templates'))
 
-box_coordinates = itertools.cycle(
+_box_coordinates = itertools.cycle(
     map(lambda c: tuple(reversed(c)),
         itertools.product(BOX_Y_COORDINATES, BOX_X_COORDINATES)))
 
@@ -74,7 +74,7 @@ def _write_latex(config, output_dir):
     avatar_cache = config.get_avatar_cache()
 
     # TODO(mshroyer): Honor 'all' parameter.
-    users = list(roster.attending_users())
+    users = list(roster.attending_users()) * 10
 
     os.mkdir(output_dir)
     os.mkdir(os.path.join(output_dir, 'avatars'))
@@ -84,6 +84,6 @@ def _write_latex(config, output_dir):
             os.path.join(output_dir, 'avatars',
                          '{user_id}.png'.format(**user._asdict())))
 
-    template = latex_jinja_env.get_template('nametags.tex')
-    template.stream(users=list(zip(users, box_coordinates))).dump(
+    template = _latex_jinja_env.get_template('nametags.tex')
+    template.stream(users=zip(users, _box_coordinates)).dump(
         os.path.join(output_dir, 'nametags.tex'))
