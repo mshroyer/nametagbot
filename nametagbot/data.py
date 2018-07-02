@@ -20,7 +20,7 @@ import sqlite3
 
 from nametagbot import User
 
-__all__ = ['Roster']
+__all__ = ['AvatarCache', 'Roster']
 
 CDN_PREFIX = 'https://cdn.discordapp.com/'
 
