@@ -41,9 +41,9 @@ def test_makes_directories(tmpdir):
 
 
 def test_set_user_attendance(roster):
-    bob = User('1', 'Bob', 'avatar1')
-    jay = User('2', 'Jay', 'avatar2')
-    cara = User('3', 'Cara', 'avatar3')
+    bob = User('1', 'Bob', '1', 'avatar1')
+    jay = User('2', 'Jay', '1', 'avatar2')
+    cara = User('3', 'Cara', '1', 'avatar3')
 
     roster.set_user_attendance(bob, True)
     roster.set_user_attendance(jay, True)
@@ -56,7 +56,7 @@ def test_set_user_attendance(roster):
 
 
 def test_set_user_attendance_updates_user(roster):
-    steve = User('1', 'Steve', 'avatar1')
+    steve = User('1', 'Steve', '1', 'avatar1')
     roster.set_user_attendance(steve, True)
 
     steve2 = steve._replace(avatar='avatar2')
@@ -66,11 +66,11 @@ def test_set_user_attendance_updates_user(roster):
 
 
 def test_attending_users_sorted_by_nick(roster):
-    steve = User('1', 'Steve', 'avatar1')
-    jay = User('2', 'Jay', 'avatar2')
-    bob = User('3', 'Bob', 'avatar3')
-    evan = User('4', 'Evan', 'avatar4')
-    cara = User('5', 'Cara', 'avatar5')
+    steve = User('1', 'Steve', '1', 'avatar1')
+    jay = User('2', 'Jay', '1', 'avatar2')
+    bob = User('3', 'Bob', '1', 'avatar3')
+    evan = User('4', 'Evan', '1', 'avatar4')
+    cara = User('5', 'Cara', '1', 'avatar5')
     for user in [steve, jay, bob, evan, cara]:
         roster.set_user_attendance(user, True)
 
@@ -78,7 +78,7 @@ def test_attending_users_sorted_by_nick(roster):
 
 
 def test_update_users_preserves_attendance(roster):
-    bob = User('1', 'Bob', 'avatar1')
+    bob = User('1', 'Bob', '1', 'avatar1')
     roster.set_user_attendance(bob, True)
 
     bob2 = bob._replace(avatar='avatar2')
@@ -92,8 +92,8 @@ def test_update_users_preserves_attendance(roster):
 
 
 def test_update_users_does_not_remove_users(roster):
-    evan = User('1', 'Evan', 'avatar1')
-    steve = User('2', 'Steve', 'avatar2')
+    evan = User('1', 'Evan', '1', 'avatar1')
+    steve = User('2', 'Steve', '1', 'avatar2')
     roster.set_user_attendance(evan, True)
     roster.set_user_attendance(steve, True)
 
@@ -102,5 +102,5 @@ def test_update_users_does_not_remove_users(roster):
 
 
 def test_update_users_accepts_unknown_users(roster):
-    user1 = User('1', 'Bob', 'avatar1')
+    user1 = User('1', 'Bob', '1', 'avatar1')
     roster.update_users([user1])

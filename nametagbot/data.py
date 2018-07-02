@@ -64,7 +64,7 @@ class Roster:
     def attending_users(self):
         cur = self.db.cursor()
         cur.execute('''
-            SELECT user_id, nick, avatar
+            SELECT user_id, nick, discriminator, avatar
             FROM Attendance NATURAL LEFT JOIN User
             ORDER BY nick;
         ''')
@@ -84,8 +84,8 @@ class Roster:
     def _upsert_user(self, user):
         self.db.execute(
             '''
-            INSERT OR REPLACE INTO User (user_id, nick, avatar)
-            VALUES (?, ?, ?);
+            INSERT OR REPLACE INTO User (user_id, nick, discriminator, avatar)
+            VALUES (?, ?, ?, ?);
         ''', tuple(user))
 
     def _init_db(self):
@@ -97,6 +97,7 @@ class Roster:
             CREATE TABLE IF NOT EXISTS User
                 (user_id TEXT NOT NULL,
                  nick TEXT,
+                 discriminator TEXT,
                  avatar TEXT,
                  PRIMARY KEY (user_id));
         ''')

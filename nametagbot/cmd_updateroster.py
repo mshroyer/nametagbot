@@ -56,7 +56,8 @@ def _update_roster(config):
         logging.info('Retrieving users from server %s', config.server_id)
         for member in client.get_server(config.server_id).members:
             nick = member.nick if member.nick is not None else member.name
-            users.append(User(member.id, nick, member.avatar))
+            users.append(
+                User(member.id, nick, member.discriminator, member.avatar))
 
     @client.event
     async def on_ready():
