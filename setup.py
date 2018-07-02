@@ -18,6 +18,7 @@ setup(
     name='nametagbot',
     version='0.0.1',
     packages=['nametagbot'],
+    package_data={'nametagbot': ['templates/*.tex']},
     entry_points={
         'console_scripts': [
             'nametagbot-latex=nametagbot.cmd_latex:main',

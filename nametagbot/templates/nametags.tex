@@ -1,0 +1,25 @@
+\documentclass{article}
+
+\usepackage[absolute]{textpos}
+\usepackage{fontspec}
+\usepackage{graphicx}
+
+\setmainfont[SizeFeatures={Size=24}]{Helvetica}
+\pagestyle{empty}
+
+\begin{document}
+
+%% for user in users
+
+\begin{textblock*}{3.38in}[0,0](\VAR{user[1][0]}in,\VAR{user[1][1]}in)
+  \begin{center}
+    \vspace{0.3in}
+    \VAR{user[0].nick}\\
+    \vspace{0.2in}
+    \includegraphics[width=1in,height=1in]{avatars/\VAR{user[0].user_id}.png}
+  \end{center}
+\end{textblock*}
+
+%% endfor
+
+\end{document}
