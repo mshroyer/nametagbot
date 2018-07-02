@@ -3,6 +3,7 @@
 \usepackage[absolute]{textpos}
 \usepackage{fontspec}
 \usepackage{graphicx}
+\usepackage{tikz}
 
 \setmainfont[SizeFeatures={Size=24}]{Helvetica}
 \pagestyle{empty}
@@ -21,7 +22,12 @@
     \vspace{0.3in}
     \VAR{escape(user[0].nick)}\\
     \vspace{0.2in}
-    \includegraphics[width=1in,height=1in]{avatars/\VAR{user[0].user_id}.png}
+    \begin{tikzpicture}[radius=0.5in]
+      \begin{scope}
+        \clip (0, 0) circle;
+        \node (0, 0) {\includegraphics[width=1in,height=1in]{avatars/\VAR{user[0].user_id}.png}};
+      \end{scope}
+    \end{tikzpicture}
   \end{center}
 \end{textblock*}
 
