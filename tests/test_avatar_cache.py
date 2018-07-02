@@ -17,7 +17,7 @@ import pytest
 import responses
 
 from nametagbot import User
-from nametagbot.data import AvatarCache, AVATAR_CDN_PREFIX
+from nametagbot.data import AvatarCache, CDN_PREFIX
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ def cache(tmpdir):
 def test_get_avatar(cache, tmpdir):
     responses.add(
         responses.GET,
-        AVATAR_CDN_PREFIX + '123/avatar1.png',
+        CDN_PREFIX + 'avatars/123/avatar1.png',
         status=200,
         content_type='image/png',
         body=b'imagedata')
@@ -48,7 +48,7 @@ def test_get_avatar(cache, tmpdir):
 def test_does_not_request_cached_avatars(cache, tmpdir):
     responses.add(
         responses.GET,
-        AVATAR_CDN_PREFIX + '123/avatar1.png',
+        CDN_PREFIX + 'avatars/123/avatar1.png',
         status=200,
         content_type='image/png')
 
@@ -63,7 +63,7 @@ def test_does_not_request_cached_avatars(cache, tmpdir):
 def test_fetches_default_for_user_without_avatar(cache, tmpdir):
     responses.add(
         responses.GET,
-        AVATAR_CDN_PREFIX + 'embed/avatars/1.png',
+        CDN_PREFIX + 'embed/avatars/1.png',
         status=200,
         content_type='image/png',
         body=b'default_avatar_1')
@@ -81,7 +81,7 @@ def test_fetches_default_for_user_without_avatar(cache, tmpdir):
 @responses.activate
 def test_not_found_avatar_raises_exception(cache, tmpdir):
     responses.add(
-        responses.GET, AVATAR_CDN_PREFIX + '123/avatar1.png', status=404)
+        responses.GET, CDN_PREFIX + 'avatars/123/avatar1.png', status=404)
 
     user = User('123', 'foo', '1', 'avatar1')
     output_path = os.path.join(tmpdir, 'out.png')
@@ -93,7 +93,7 @@ def test_not_found_avatar_raises_exception(cache, tmpdir):
 def test_unexpected_content_type_raises_exception(cache, tmpdir):
     responses.add(
         responses.GET,
-        AVATAR_CDN_PREFIX + '123/avatar1.png',
+        CDN_PREFIX + 'avatars/123/avatar1.png',
         status=200,
         content_type='image/jpeg')
 
