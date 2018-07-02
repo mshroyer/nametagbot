@@ -85,5 +85,31 @@ def _write_latex(config, output_dir):
                          '{user_id}.png'.format(**user._asdict())))
 
     template = _latex_jinja_env.get_template('nametags.tex')
-    template.stream(users=zip(users, _box_coordinates)).dump(
-        os.path.join(output_dir, 'nametags.tex'))
+    template.stream(
+        users=zip(users, _box_coordinates), escape=_latex_escape).dump(
+            os.path.join(output_dir, 'nametags.tex'))
+
+
+def _latex_escape(s):
+    escapes = {
+        '&': r'\&',
+        '%': r'\%',
+        '$': r'\$',
+        '#': r'\#',
+        '_': r'\_',
+        '{': r'\{',
+        '}': r'\}',
+        '~': r'\textasciitilde{}',
+        '^': r'\^{}',
+        '\\': r'\textbackslash{}',
+        '<': r'\textless{}',
+        '>': r'\textgreater{}',
+    }
+    output = []
+    for ch in s:
+        if ch in escapes:
+            output.append(escapes[ch])
+        else:
+            output.append(ch)
+
+    return ''.join(output)
