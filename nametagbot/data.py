@@ -22,7 +22,7 @@ from nametagbot import User
 
 __all__ = ['Roster']
 
-AVATAR_CDN_PREFIX = 'https://cdn.discordapp.com/avatars/'
+CDN_PREFIX = 'https://cdn.discordapp.com/'
 
 
 class Roster:
@@ -163,10 +163,10 @@ class AvatarCache:
     @classmethod
     def _avatar_url(klass, user):
         if user.avatar:
-            return AVATAR_CDN_PREFIX + '{user_id}/{avatar}.png'.format(
+            return CDN_PREFIX + 'avatars/{user_id}/{avatar}.png'.format(
                 **user._asdict())
         else:
-            return AVATAR_CDN_PREFIX + 'embed/avatars/{}.png'.format(
+            return CDN_PREFIX + 'embed/avatars/{}.png'.format(
                 klass._default_avatar(user))
 
 

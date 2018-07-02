@@ -32,7 +32,7 @@ BOX_Y_COORDINATES = [0.56, 3.08, 5.6, 8.13]
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
 
     p = argparse.ArgumentParser(
         description=__doc__,
