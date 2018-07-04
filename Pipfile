@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+appdirs = "*"
+"discord.py" = "*"
+requests = "*"
+
+[dev-packages]
+pytest = "*"
+responses = "*"
+
+[requires]
+python_version = "3.6"
