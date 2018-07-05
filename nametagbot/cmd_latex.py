@@ -74,7 +74,7 @@ def _write_latex(config, output_dir):
     avatar_cache = config.get_avatar_cache()
 
     # TODO(mshroyer): Honor 'all' parameter.
-    users = list(roster.attending_users()) * 10
+    users = list(roster.attending_users())
 
     os.mkdir(output_dir)
     os.mkdir(os.path.join(output_dir, 'avatars'))
