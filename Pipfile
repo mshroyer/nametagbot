@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 appdirs = "*"
+async-timeout = "*"
 "discord.py" = "*"
 jinja2 = "*"
 requests = "*"
