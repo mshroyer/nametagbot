@@ -21,7 +21,7 @@ from nametagbot.data import Roster
 
 @pytest.fixture
 def roster(tmpdir):
-    r = Roster(os.path.join(tmpdir, 'roster.db'))
+    r = Roster(os.path.join(str(tmpdir), 'roster.db'))
     yield r
     r.close()
 
@@ -31,12 +31,12 @@ def test_reopen(roster, tmpdir):
 
     # We should not fail to open the roster a second time, even though the
     # tables have already been created.
-    roster2 = Roster(os.path.join(tmpdir, 'roster.db'))
+    roster2 = Roster(os.path.join(str(tmpdir), 'roster.db'))
     roster2.close()
 
 
 def test_makes_directories(tmpdir):
-    roster = Roster(os.path.join(tmpdir, 'foo', 'bar'))
+    roster = Roster(os.path.join(str(tmpdir), 'foo', 'bar'))
     roster.close()
 
 

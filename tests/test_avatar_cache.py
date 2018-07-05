@@ -22,7 +22,7 @@ from nametagbot.data import AvatarCache, CDN_PREFIX
 
 @pytest.fixture
 def cache(tmpdir):
-    return AvatarCache(os.path.join(tmpdir, 'cache'))
+    return AvatarCache(os.path.join(str(tmpdir), 'cache'))
 
 
 @responses.activate
@@ -35,7 +35,7 @@ def test_get_avatar(cache, tmpdir):
         body=b'imagedata')
 
     user = User('123', 'foo', '1', 'avatar1')
-    output_path = os.path.join(tmpdir, 'out.png')
+    output_path = os.path.join(str(tmpdir), 'out.png')
     cache.get_avatar(user, output_path)
 
     with open(output_path, 'rb') as f:
@@ -54,7 +54,7 @@ def test_does_not_request_cached_avatars(cache, tmpdir):
 
     user = User('123', 'foo', '1', 'avatar1')
     for i in range(3):
-        cache.get_avatar(user, os.path.join(tmpdir, 'out{}.png'.format(i)))
+        cache.get_avatar(user, os.path.join(str(tmpdir), 'out{}.png'.format(i)))
 
     assert len(responses.calls) == 1
 
@@ -69,7 +69,7 @@ def test_fetches_default_for_user_without_avatar(cache, tmpdir):
         body=b'default_avatar_1')
 
     user = User('123', 'foo', '1', '')
-    output_path = os.path.join(tmpdir, 'out.png')
+    output_path = os.path.join(str(tmpdir), 'out.png')
     cache.get_avatar(user, output_path)
 
     with open(output_path, 'rb') as f:
@@ -84,7 +84,7 @@ def test_not_found_avatar_raises_exception(cache, tmpdir):
         responses.GET, CDN_PREFIX + 'avatars/123/avatar1.png', status=404)
 
     user = User('123', 'foo', '1', 'avatar1')
-    output_path = os.path.join(tmpdir, 'out.png')
+    output_path = os.path.join(str(tmpdir), 'out.png')
     with pytest.raises(ValueError):
         cache.get_avatar(user, output_path)
 
@@ -98,6 +98,6 @@ def test_unexpected_content_type_raises_exception(cache, tmpdir):
         content_type='image/jpeg')
 
     user = User('123', 'foo', '1', 'avatar1')
-    output_path = os.path.join(tmpdir, 'out.png')
+    output_path = os.path.join(str(tmpdir), 'out.png')
     with pytest.raises(ValueError):
         cache.get_avatar(user, output_path)
