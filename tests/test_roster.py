@@ -69,7 +69,7 @@ def test_attending_users_sorted_by_nick(roster):
     steve = User('1', 'Steve', '1', 'avatar1')
     jay = User('2', 'Jay', '1', 'avatar2')
     bob = User('3', 'Bob', '1', 'avatar3')
-    evan = User('4', 'Evan', '1', 'avatar4')
+    evan = User('4', 'evan', '1', 'avatar4')
     cara = User('5', 'Cara', '1', 'avatar5')
     for user in [steve, jay, bob, evan, cara]:
         roster.set_user_attendance(user, True)

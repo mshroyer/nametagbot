@@ -66,7 +66,7 @@ class Roster:
         cur.execute('''
             SELECT user_id, nick, discriminator, avatar
             FROM Attendance NATURAL LEFT JOIN User
-            ORDER BY nick;
+            ORDER BY nick COLLATE NOCASE ASC;
         ''')
 
         while True:
