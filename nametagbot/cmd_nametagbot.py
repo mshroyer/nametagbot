@@ -22,8 +22,8 @@ import logging
 from queue import Queue
 from threading import Thread
 
-from . import User
 from .config import Config
+from . import chat
 
 
 def main():
@@ -54,10 +54,13 @@ def _run_bot(config):
             return
 
         logging.info('Got message: %s', message.content)
+        logging.info(
+            'Parsed as: %s',
+            chat.parse_message(message, config.server_id, client.user))
 
     client.run(config.bot_token)
 
-    roster_messages.put(('QUIT',))
+    roster_messages.put(('QUIT', ))
     roster_thread.join()
 
 
