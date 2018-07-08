@@ -1,6 +1,7 @@
 *.egg-info
 .eggs
 .pytest_cache
+.tox
 __pycache__
 
 .idea
