@@ -107,6 +107,12 @@ class Roster:
                  FOREIGN KEY (user_id) REFERENCES User (user_id));
         ''')
 
+    def __enter__(self):
+        pass
+
+    def __exit__(self, type, value, tb):
+        self.close()
+
 
 class AvatarCache:
     """Loading cache of user avatars."""
