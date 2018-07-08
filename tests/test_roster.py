@@ -104,3 +104,9 @@ def test_update_users_does_not_remove_users(roster):
 def test_update_users_accepts_unknown_users(roster):
     user1 = User('1', 'Bob', '1', 'avatar1')
     roster.update_users([user1])
+
+
+def test_accepts_multi_digit_user_id(roster):
+    user = User('123', 'Bob', '456', 'avatar1')
+    roster.set_user_attendance(user, True)
+    assert list(roster.attending_users()) == [user]

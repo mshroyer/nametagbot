@@ -53,7 +53,7 @@ class Roster:
             else:
                 query = 'DELETE FROM Attendance WHERE user_id = ?;'
 
-            self.db.execute(query, (user.user_id))
+            self.db.execute(query, (user.user_id,))
 
     def update_users(self, users):
         """Updates the roster with the users' nicks and avatars."""
@@ -108,7 +108,7 @@ class Roster:
         ''')
 
     def __enter__(self):
-        pass
+        return self
 
     def __exit__(self, type, value, tb):
         self.close()
