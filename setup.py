@@ -23,6 +23,7 @@ setup(
         'console_scripts': [
             'nametagbot-latex=nametagbot.cmd_latex:main',
             'nametagbot-updateroster=nametagbot.cmd_updateroster:main',
+            'nametagbot=nametagbot.cmd_nametagbot:main',
         ],
     },
     setup_requires=['pytest-runner'],
