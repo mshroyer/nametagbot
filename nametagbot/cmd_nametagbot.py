@@ -20,6 +20,7 @@ import argparse
 import discord
 import logging
 from queue import Queue
+import sys
 from threading import Thread
 
 from .config import Config
@@ -49,14 +50,12 @@ def _run_bot(config):
 
     @client.event
     async def on_message(message):
-        if message.server is not None \
-           and message.server.id != config.server_id:
+        action = chat.parse_message(message, config.server_id, client.user)
+        if action is None:
             return
 
-        logging.info('Got message: %s', message.content)
-        logging.info(
-            'Parsed as: %s',
-            chat.parse_message(message, config.server_id, client.user))
+        logging.info('Action: %s', action)
+        roster_messages.put(action)
 
     client.run(config.bot_token)
 
@@ -71,18 +70,24 @@ def _roster_actor(config, messages):
     serialize messages for the database.  Messages can be:
 
     ('QUIT')
-    ('SET_ATTENDING', User(...))
+    ('ATTENDING', User(...))
 
     """
     logging.info('Roster actor is starting')
 
-    with config.get_roster() as roster:
-        while True:
-            message = messages.get()
+    try:
+        with config.get_roster() as roster:
+            while True:
+                message = messages.get()
 
-            if message[0] == 'QUIT':
-                logging.info('Roster actor is quitting')
-                return
+                if message[0] == 'QUIT':
+                    logging.info('Roster actor is quitting')
+                    return
 
-            if message[0] == 'SET_ATTENDING':
-                roster.set_user_attendance(message[1], True)
+                if message[0] == 'ATTENDING':
+                    user = message[1]
+                    logging.info('Setting attendance to True: %s', user)
+                    roster.set_user_attendance(user, True)
+    except Exception as e:
+        logging.critical('Roster actor failed: %s', e)
+        sys._exit(1)
