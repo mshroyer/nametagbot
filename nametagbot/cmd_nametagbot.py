@@ -49,6 +49,16 @@ def _run_bot(config):
     client = discord.Client()
 
     @client.event
+    async def on_ready():
+        logging.info('Connected to server %s', config.server_id)
+
+        bot_member = client.get_server(config.server_id).me
+        logging.info('Roles: %s',
+                     list(map(lambda role: role.name, bot_member.roles)))
+        perms = bot_member.server_permissions
+        logging.info('Permission to read messages: %s', perms.read_messages)
+
+    @client.event
     async def on_message(message):
         action = chat.parse_message(message, config.server_id, client.user)
         if action is None:
