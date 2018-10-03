@@ -5,7 +5,7 @@ their nicks/usernames and avatars. It:
 
 - Downloads the server's roster using Discord's API.
 - Templates a LaTeX document for printing physical nametags.
-- Chat bot to allow other users to ask for a nametag (partially
-  implemented).
+- Implements a chat bot to allow other users to ask for a nametag
+  (partially implemented).
 
 This is not an officially supported Google product.
